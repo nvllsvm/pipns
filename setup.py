@@ -9,6 +9,7 @@ setuptools.setup(
     packages=['pipns'],
     entry_points={'console_scripts': ['pipns=pipns:main']},
     package_data={'pipns': ['scripts/*.py']},
+    install_requires=['pipenv'],
     setup_requires=['setuptools_scm'],
     use_scm_version=True,
     python_requires='>=3.7')
