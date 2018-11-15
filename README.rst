@@ -8,7 +8,7 @@ pipns
 Isolated, named Python environments.
 
 * Install packages in isolated pipenv environments.
-* Provides common PATH and MANPATH variables to access reousrces of explicitly installed packages.
+* Provides common PATH and MANPATH variables to access resources of explicitly installed packages.
 * Easily rebuild or update all environments. (Great for Python upgrades).
 * Inspired by `pipsi <https://github.com/mitsuhiko/pipsi>`_.
 
@@ -16,7 +16,7 @@ Isolated, named Python environments.
 Examples
 --------
 
-Usuage is basically the same as pipenv with the exception of namespace
+Usage is basically the same as pipenv with the exception of namespace
 specification (``-n`` or ``--all``).
 
 Installing a package
