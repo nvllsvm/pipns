@@ -3,6 +3,8 @@ pipns
 
 |PyPi Version|
 
+**NOTE: This tool is under active development and is broken in many ways.**
+
 Isolated, named Python environments.
 
 * Install packages in isolated pipenv environments.
