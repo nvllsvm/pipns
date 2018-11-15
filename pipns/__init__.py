@@ -122,8 +122,7 @@ def main():
     # set the python_version to active version. That's not appropriate
     # for pipns so let's be generic unless specified otherwise.
     if not namespace_pipfile.is_file():
-        with open(namespace_pipfile, 'w') as handle:
-            handle.write('[requires]\npython_version = "*"')
+        namespace_pipfile.write_text('[requires]\npython_version = "*"')
 
     namespace_pipfile.touch()
 
