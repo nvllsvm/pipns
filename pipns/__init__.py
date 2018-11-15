@@ -116,6 +116,17 @@ def main():
             namespace_dir.mkdir(parents=True, exist_ok=True)
         namespace_pipfile = pathlib.Path(namespace_dir, 'Pipfile')
         os.environ['PIPENV_PIPFILE'] = str(namespace_pipfile)
+    else:
+        if len(sys.argv) != 3:
+            print('usage: TODO')
+            sys.exit(1)
+        command = sys.argv[1]
+        namespace = sys.argv[2]
+        subprocess.run(
+            ['pipns', '-n', namespace, command, namespace],
+            check=True
+        )
+        sys.exit()
 
     namespace_pipfile.parent.mkdir(parents=True, exist_ok=True)
     # The file could alternatively be touched, but then pipenv would

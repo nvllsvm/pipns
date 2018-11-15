@@ -24,9 +24,9 @@ Installing a package
 
 .. code:: shell
 
-    $ pipns -n zepusu install zepusu
+    $ pipns install zepusu
     $ . ~/.pipns/shell.sh
-    $ which zepusu
+    $ command -v zepusu
     /home/user/.pipns/bin/zepusu
 
 Updating environments
