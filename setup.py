@@ -4,7 +4,7 @@ setuptools.setup(
     name='pipns',
     author='Andrew Rabert',
     author_email='ar@nullsum.net',
-    url='https://gitlab.com/nvllsvm/pipns',
+    url='https://github.com/nvllsvm/pipns',
     license='MIT',
     packages=['pipns'],
     entry_points={'console_scripts': ['pipns=pipns:main']},
