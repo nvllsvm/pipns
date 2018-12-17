@@ -13,7 +13,10 @@ os.environ['PIP_USER'] = '0'
 os.environ.pop('VIRTUAL_ENV', None)
 os.environ['PIPENV_IGNORE_VIRTUALENVS'] = '1'
 
-os.environ.setdefault('PIPNS_ROOT', '~/.pipns')
+os.environ.setdefault(
+    'PIPNS_ROOT',
+    os.environ.get('XDG_DATA_HOME', '~/.local/share/pipns')
+)
 
 PIPNS_ROOT = pathlib.Path(os.environ['PIPNS_ROOT']).expanduser().resolve()
 PIPNS_ENVIRONMENTS = PIPNS_ROOT.joinpath('environments')
