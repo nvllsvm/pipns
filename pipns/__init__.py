@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import signal
 import subprocess
 import sys
 
@@ -146,7 +147,10 @@ def main():
 
     args = sys.argv[1:]
 
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     result = subprocess.run(['pipenv', *args])
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     if result.returncode != 0:
         sys.exit(result.returncode)
     if args[0] in ('install', 'update'):
