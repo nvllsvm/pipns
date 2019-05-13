@@ -1,9 +1,9 @@
+import argparse
 import json
 import os
 import pathlib
 import signal
 import subprocess
-import sys
 
 import pkg_resources
 
@@ -96,41 +96,36 @@ def write_shell_integration():
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--list', action='store_true')
+    namespace_group = parser.add_mutually_exclusive_group(required=True)
+    namespace_group.add_argument('--all', action='store_true')
+    namespace_group.add_argument('-n', dest='namespace')
+    parser.add_argument('args', nargs=argparse.REMAINDER)
+    args = parser.parse_args()
+
     PIPNS_ROOT.mkdir(parents=True, exist_ok=True)
 
     write_shell_integration()
 
-    if len(sys.argv) == 1 or sys.argv[1] == '--list':
+    if args.list:
         for path in pipns_list():
             print(path.name)
-        sys.exit()
-    elif sys.argv[1] == '--all':
-        pipns_all(sys.argv[2:])
-        sys.exit()
+        parser.exit()
+
+    if args.all:
+        pipns_all(args.args)
+        parser.exit()
 
     if 'PIPENV_PIPFILE' in os.environ:
         namespace_pipfile = pathlib.Path(
             os.environ['PIPENV_PIPFILE']).expanduser().resolve()
-    elif sys.argv[1] == '-n':
-        sys.argv.pop(1)
-        namespace = sys.argv[1]
-        sys.argv.pop(1)
-        namespace_dir = PIPNS_ENVIRONMENTS.joinpath(namespace)
+    elif args.namespace:
+        namespace_dir = PIPNS_ENVIRONMENTS.joinpath(args.namespace)
         if not namespace_dir.exists():
             namespace_dir.mkdir(parents=True, exist_ok=True)
         namespace_pipfile = pathlib.Path(namespace_dir, 'Pipfile')
         os.environ['PIPENV_PIPFILE'] = str(namespace_pipfile)
-    else:
-        if len(sys.argv) != 3:
-            print('usage: TODO')
-            sys.exit(1)
-        command = sys.argv[1]
-        namespace = sys.argv[2]
-        subprocess.run(
-            ['pipns', '-n', namespace, command, namespace],
-            check=True
-        )
-        sys.exit()
 
     namespace_pipfile.parent.mkdir(parents=True, exist_ok=True)
     # The file could alternatively be touched, but then pipenv would
@@ -141,19 +136,15 @@ def main():
 
     namespace_pipfile.touch()
 
-    namespace = pathlib.Path(namespace_pipfile).parent.name
-
     os.environ['PIPENV_VENV_IN_PROJECT'] = '1'
 
-    args = sys.argv[1:]
-
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    result = subprocess.run(['pipenv', *args])
+    result = subprocess.run(['pipenv', *args.args])
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     if result.returncode != 0:
-        sys.exit(result.returncode)
-    if args[0] in ('install', 'update'):
+        parser.exit(result.returncode)
+    if args.args and args.args[0] in ('install', 'update'):
         for package in pipenv_explicitly_installed():
             link_package_files(package)
 
