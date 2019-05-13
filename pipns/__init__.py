@@ -7,6 +7,8 @@ import subprocess
 
 import pkg_resources
 
+_version = pkg_resources.get_distribution(__package__).version
+
 # fix a deficiency in pipenv
 # https://github.com/pypa/pipenv/issues/1798
 os.environ['PIP_USER'] = '0'
@@ -97,6 +99,7 @@ def write_shell_integration():
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version=_version)
     parser.add_argument('--list', action='store_true')
     namespace_group = parser.add_mutually_exclusive_group(required=True)
     namespace_group.add_argument('--all', action='store_true')
