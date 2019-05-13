@@ -8,7 +8,7 @@ setuptools.setup(
     url='https://github.com/nvllsvm/pipns',
     license='MIT',
     packages=['pipns'],
-    entry_points={'console_scripts': ['pipns=pipns:main']},
+    entry_points={'console_scripts': ['pipns=pipns.__main__:main']},
     package_data={'pipns': ['scripts/*.py']},
     install_requires=['pipenv'],
     python_requires='>=3.7')
