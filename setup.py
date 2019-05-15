@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='pipns',
-    version='0.0.8',
+    version='0.0.9',
     author='Andrew Rabert',
     author_email='ar@nullsum.net',
     url='https://github.com/nvllsvm/pipns',
