@@ -100,12 +100,11 @@ def write_shell_integration():
 def main():
     parser = argparse.ArgumentParser(__package__)
     parser.add_argument('--version', action='version', version=_version)
-    parser.add_argument('--list', action='store_true')
-    namespace_group = parser.add_mutually_exclusive_group()
+    namespace_group = parser.add_mutually_exclusive_group(required=True)
+    namespace_group.add_argument('--list', action='store_true')
     namespace_group.add_argument('--all', action='store_true')
     namespace_group.add_argument('-n', dest='namespace')
-    parser.add_argument('args', nargs=argparse.REMAINDER)
-    args = parser.parse_args()
+    args, pipenv_args = parser.parse_known_args()
 
     PIPNS_ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -115,12 +114,10 @@ def main():
         for path in pipns_list():
             print(path.name)
         parser.exit()
-
-    if args.all:
-        pipns_all(args.args)
+    elif args.all:
+        pipns_all(pipenv_args)
         parser.exit()
-
-    if 'PIPENV_PIPFILE' in os.environ:
+    elif 'PIPENV_PIPFILE' in os.environ:
         namespace_pipfile = pathlib.Path(
             os.environ['PIPENV_PIPFILE']).expanduser().resolve()
     elif args.namespace:
@@ -142,12 +139,12 @@ def main():
     os.environ['PIPENV_VENV_IN_PROJECT'] = '1'
 
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    result = subprocess.run(['pipenv', *args.args])
+    result = subprocess.run(['pipenv', *pipenv_args])
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     if result.returncode != 0:
         parser.exit(result.returncode)
-    if args.args and args.args[0] in ('install', 'update'):
+    if pipenv_args and pipenv_args[0] in ('install', 'update'):
         for package in pipenv_explicitly_installed():
             link_package_files(package)
 
