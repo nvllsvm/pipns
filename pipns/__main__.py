@@ -100,7 +100,10 @@ def write_shell_integration():
 def main():
     parser = argparse.ArgumentParser(__package__)
     parser.add_argument('--version', action='version', version=_version)
-    namespace_group = parser.add_mutually_exclusive_group(required=True)
+
+    namespace_group = parser.add_mutually_exclusive_group(
+        required=False if os.environ.get('PIPENV_PIPFILE') else True
+    )
     namespace_group.add_argument('--list', action='store_true')
     namespace_group.add_argument('--all', action='store_true')
     namespace_group.add_argument('-n', dest='namespace')
