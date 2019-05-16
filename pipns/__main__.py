@@ -107,7 +107,10 @@ def main():
     namespace_group.add_argument('--list', action='store_true')
     namespace_group.add_argument('--all', action='store_true')
     namespace_group.add_argument('-n', dest='namespace')
-    args, pipenv_args = parser.parse_known_args()
+    parser.add_argument(
+        '--pipenv', nargs=argparse.REMAINDER, help='execute pipenv commands'
+    )
+    args = parser.parse_args()
 
     PIPNS_ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -118,7 +121,7 @@ def main():
             print(path.name)
         parser.exit()
     elif args.all:
-        pipns_all(pipenv_args)
+        pipns_all(args.pipenv)
         parser.exit()
     elif 'PIPENV_PIPFILE' in os.environ:
         namespace_pipfile = pathlib.Path(
@@ -142,12 +145,12 @@ def main():
     os.environ['PIPENV_VENV_IN_PROJECT'] = '1'
 
     signal.signal(signal.SIGINT, signal.SIG_IGN)
-    result = subprocess.run(['pipenv', *pipenv_args])
+    result = subprocess.run(['pipenv', *args.pipenv])
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     if result.returncode != 0:
         parser.exit(result.returncode)
-    if pipenv_args and pipenv_args[0] in ('install', 'update'):
+    if args.pipenv and args.pipenv[0] in ('install', 'update'):
         for package in pipenv_explicitly_installed():
             link_package_files(package)
 
