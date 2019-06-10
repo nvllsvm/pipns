@@ -1,4 +1,5 @@
 import argparse
+import concurrent.futures
 import json
 import os
 import pathlib
@@ -84,10 +85,15 @@ def pipns_list():
     return sorted(paths)
 
 
-def pipns_all(args):
-    for path in pipns_list():
-        print(f'Executing pipns for {path}')
-        subprocess.run(['pipns', '-n', path.name, *args], check=True)
+def pipns_all(args, max_workers=None):
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        futures = [
+            executor.submit(
+                subprocess.run, ['pipns', '-n', path.name, *args], check=True)
+            for path in pipns_list()
+        ]
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
 
 
 def write_shell_integration():
@@ -110,6 +116,10 @@ def main():
     parser.add_argument(
         'pipenv', nargs=argparse.REMAINDER, help='execute pipenv commands'
     )
+    parser.add_argument(
+        '--num-processes', type=int,
+        help='number of processes to use with --all (default num vcpus)'
+    )
     args = parser.parse_args()
 
     PIPNS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -121,7 +131,7 @@ def main():
             print(path.name)
         parser.exit()
     elif args.all:
-        pipns_all(args.pipenv)
+        pipns_all(args.pipenv, args.num_processes)
         parser.exit()
     elif 'PIPENV_PIPFILE' in os.environ:
         namespace_pipfile = pathlib.Path(
