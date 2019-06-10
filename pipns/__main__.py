@@ -108,7 +108,7 @@ def main():
     namespace_group.add_argument('--all', action='store_true')
     namespace_group.add_argument('-n', dest='namespace')
     parser.add_argument(
-        '--pipenv', nargs=argparse.REMAINDER, help='execute pipenv commands'
+        'pipenv', nargs=argparse.REMAINDER, help='execute pipenv commands'
     )
     args = parser.parse_args()
 
