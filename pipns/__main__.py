@@ -86,7 +86,7 @@ def pipns_list():
 
 
 def pipns_all(args, max_workers=None):
-    with concurrent.futures.ProcessPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [
             executor.submit(
                 subprocess.run, ['pipns', '-n', path.name, *args], check=True)
