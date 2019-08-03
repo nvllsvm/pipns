@@ -117,7 +117,9 @@ def main():
         'pipenv', nargs=argparse.REMAINDER, help='execute pipenv commands'
     )
     parser.add_argument(
-        '--num-processes', type=int,
+        '--num-processes',
+        metavar='NUM',
+        type=int,
         help='number of processes to use with --all (default num vcpus)'
     )
     args = parser.parse_args()
