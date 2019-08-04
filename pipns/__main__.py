@@ -103,6 +103,38 @@ def write_shell_integration():
     ]))
 
 
+class _PruneSymlinks(argparse.Action):
+
+    def __init__(self,
+                 option_strings,
+                 dest=argparse.SUPPRESS):
+        super().__init__(
+            option_strings,
+            dest=dest,
+            nargs=0,
+            help=('Prune invalid symlinks from the pipns bin and man paths. '
+                  'Exits when complete.')
+        )
+
+    def __call__(self, parser, *args):
+        for path in [PIPNS_BIN, PIPNS_MAN]:
+            if path.is_dir():
+                self._prune_symlinks(path)
+        parser.exit()
+
+    @staticmethod
+    def _prune_symlinks(root):
+        """Delete invalid symlinks"""
+        stack = [root]
+        while stack:
+            for path in stack.pop().iterdir():
+                if path.is_dir():
+                    stack.append(path)
+                elif path.is_symlink() and not path.exists():
+                    print(f'Removing {path}')
+                    path.unlink()
+
+
 def main():
     parser = argparse.ArgumentParser(__package__)
     parser.add_argument('--version', action='version', version=_version)
@@ -115,6 +147,10 @@ def main():
     namespace_group.add_argument('-n', dest='namespace')
     parser.add_argument(
         'pipenv', nargs=argparse.REMAINDER, help='execute pipenv commands'
+    )
+    parser.add_argument(
+        '--prune',
+        action=_PruneSymlinks
     )
     parser.add_argument(
         '--num-processes',
